@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100" data-bs-theme="light">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Mark Colley">
+    <meta name="theme-color" content="#0d6efd">
+    <title>HF‑EP, Human‑Factors Extension Pack for SUMO</title>
+
+    <!-- Fonts, icons, CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+
+    <style>
+      :root {
+        --hfep-primary: #0d6efd;
+        --hfep-bg-subtle: #f7f9fc;
+        --hfep-border: #e5e7eb;
+        --hfep-text-muted: #6b7280;
+        --hfep-radius: 14px;
+      }
+
+      html, body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+      body { padding-top: 72px; }
+
+      /* Navbar */
+      .navbar { backdrop-filter: saturate(140%) blur(6px); }
+      .navbar .nav-link { font-weight: 600; }
+      .navbar .nav-link.active { color: var(--hfep-primary) !important; }
+	/* Timeline */
+	.timeline {
+	  position: relative;
+	  display: grid;
+	  gap: 1rem;
+	  margin: 0;
+	  padding-left: 2.25rem;
+	}
+	.timeline::before {
+	  content: "";
+	  position: absolute;
+	  left: 1rem;
+	  top: .25rem;
+	  bottom: .25rem;
+	  width: 2px;
+	  background: #e9ecef;
+	}
+	.titem {
+	  display: grid;
+	  grid-template-columns: 1.75rem 1fr;
+	  column-gap: .75rem;
+	  align-items: start;
+	}
+	.titem::before {
+	  content: "";
+	  width: 12px;
+	  height: 12px;
+	  border-radius: 999px;
+	  background: var(--bs-primary, #0d6efd);
+	  border: 2px solid #fff;
+	  box-shadow: 0 0 0 3px rgba(13,110,253,.25);
+	  margin-top: .35rem;
+	  grid-column: 1;
+	}
+	.titem h3 {
+	  margin: 0;
+	  font-weight: 700;
+	  font-size: 1rem;
+	  line-height: 1.2;
+	  grid-column: 2;
+	}
+	.titem > div {
+	  margin: .15rem 0 0 0;
+	  color: var(--bs-secondary-color, #6c757d);
+	  line-height: 1.45;
+	  grid-column: 2;
+	}
+	@media (min-width: 992px) {
+	  .timeline { gap: 1.25rem; padding-left: 2.5rem; }
+	  .timeline::before { left: 1.15rem; }
+	}
+
+
+      /* Hero */
+      .hero {
+        background: radial-gradient(1200px 500px at 20% -20%, #e8f1ff 0%, rgba(232,241,255,0) 60%),
+                    linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+        border-bottom: 1px solid var(--hfep-border);
+      }
+
+      /* Section spacing */
+      section { padding: 48px 0; }
+      .section-head { margin-bottom: 16px; }
+
+      /* Cards */
+      .card-hfep { border: 1px solid var(--hfep-border); border-radius: var(--hfep-radius); }
+      .card-hfep:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.06); transform: translateY(-1px); transition: box-shadow .2s ease, transform .2s ease; }
+
+      /* Diagram */
+      .diagram-wrap { position: relative; width: 100%; max-width: 920px; margin: 12px auto 8px; }
+      svg#hfepMap { width: 100%; height: auto; }
+      .node circle { fill: var(--hfep-bg-subtle); stroke: var(--hfep-primary); stroke-width: 2; }
+      .node text.title { font-weight: 700; font-size: 14px; }
+      .node text.desc { font-size: 12px; fill: #334155; }
+      .link { stroke: #98a6b3; stroke-width: 1.5; }
+      .svg-note { font-size: 12px; fill: var(--hfep-text-muted); }
+      .node:hover circle { fill: #eef5ff; }
+
+      /* Timeline */
+      .timeline { position: relative; }
+      .timeline::before { content: ""; position: absolute; left: 8px; top: 0; bottom: 0; width: 3px; background: var(--hfep-primary); border-radius: 2px; opacity: .25; }
+      .titem { position: relative; margin-left: 28px; padding-bottom: 10px; }
+      .titem::before { content: ""; position: absolute; left: -6px; top: 6px; width: 14px; height: 14px; background: #fff; border: 3px solid var(--hfep-primary); border-radius: 50%; }
+
+      /* References */
+      .refs ol { font-size: 0.95rem; }
+      .refs li { margin-bottom: .5rem; }
+      .refs a { text-decoration: none; }
+
+      /* Footer */
+      footer { border-top: 1px solid var(--hfep-border); padding: 28px 0; color: var(--hfep-text-muted); }
+
+      /* Utilities */
+      .badge-kpi { background: var(--hfep-primary); }
+      .muted { color: var(--hfep-text-muted); }
+
+      /* Accessibility */
+      .skip-link { position: absolute; left: -999px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+      .skip-link:focus { position: static; width: auto; height: auto; padding: 6px 10px; background: #fff; border: 2px solid var(--hfep-primary); border-radius: 8px; z-index: 1050; }
+
+      @media (prefers-color-scheme: dark) {
+        :root { color-scheme: light; } /* lock light for consistent look, remove if dark preferred */
+      }
+    </style>
+  </head>
+
+  <body class="d-flex flex-column h-100" data-bs-spy="scroll" data-bs-target="#siteNav" data-bs-smooth-scroll="true" tabindex="0">
+    <a href="#main" class="skip-link">Skip to content</a>
+
+    <!-- Navbar -->
+    <nav id="siteNav" class="navbar navbar-expand-lg navbar-light bg-white fixed-top border-bottom shadow-sm">
+      <div class="container">
+        <a class="navbar-brand fw-bold" href="#home">HF‑EP</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navCollapse" aria-controls="navCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navCollapse">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item"><a class="nav-link active" href="#home">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="#project">Project</a></li>
+            <li class="nav-item"><a class="nav-link" href="#diagram">Prototype map</a></li>
+            <li class="nav-item"><a class="nav-link" href="#approach">Approach</a></li>
+            <li class="nav-item"><a class="nav-link" href="#timeline">Timeline</a></li>
+            <li class="nav-item"><a class="nav-link" href="#team">Team</a></li>
+            <li class="nav-item"><a class="nav-link" href="#repos">Code</a></li>
+            <li class="nav-item"><a class="nav-link" href="#refs">References</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="main" class="flex-shrink-0">
+      <!-- Hero / Home -->
+      <header id="home" class="hero py-5">
+        <div class="container py-2">
+          <div class="row align-items-center g-4">
+            <div class="col-lg-9">
+              <h1 class="display-5 fw-bold mb-3">Human‑Factors Extension Pack for SUMO</h1>
+              <p class="lead mb-3">HF‑EP unifies five research prototypes for human factors in traffic simulation into one dependable add‑on for SUMO, with a Unity viewer for studies with people. Focus is stability, not new scientific models.</p>
+              <p class="text-secondary mb-1">Contact, m.colley (at) ucl.ac.uk</p>
+            </div>
+            <div class="col-lg-3 text-lg-end">
+              <span class="badge rounded-pill text-bg-primary me-1">12‑month project</span>
+              <span class="badge rounded-pill text-bg-primary me-1">API stability</span>
+              <span class="badge rounded-pill text-bg-primary">Cross‑platform CI</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Project summary -->
+      <section id="project">
+        <div class="container">
+          <div class="section-head">
+            <h2 class="h3 fw-bold">Project summary</h2>
+            <p class="text-secondary mb-0">Traffic simulators often omit people and interfaces. Our group built focused prototypes in SUMO and Unity. HF‑EP merges them under one namespace with a stable Python API, packaging, tests, documentation, and governance so UK labs and courses can adopt with confidence.</p>
+          </div>
+          <div class="row g-3 pt-2">
+            <div class="col-md-6 col-lg-3">
+              <div class="card-hfep p-3 h-100">
+                <h3 class="h6 fw-bold mb-1">Unified API</h3>
+                <p class="mb-0 text-secondary">Agents, sensors, interface widgets, scenarios, logging</p>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+              <div class="card-hfep p-3 h-100">
+                <h3 class="h6 fw-bold mb-1">Releases & packaging</h3>
+                <p class="mb-0 text-secondary">Versioned schemas, signed builds, Docker, Conda, PyPI</p>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+              <div class="card-hfep p-3 h-100">
+                <h3 class="h6 fw-bold mb-1">Docs & training</h3>
+                <p class="mb-0 text-secondary">Tutorials and UK scenario packs, educator kits and clinics</p>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+              <div class="card-hfep p-3 h-100">
+                <h3 class="h6 fw-bold mb-1">Unity bridge</h3>
+                <p class="mb-0 text-secondary">Timing control and headless visualiser for teaching labs</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+<!-- Diagram -->
+<section id="diagram" class="pt-0">
+  <div class="container">
+    <h2 class="h3 fw-bold">Prototype map</h2>
+    <p class="text-secondary">Five prototypes feed into HF-EP, the Unity viewer supports human-in-the-loop studies.</p>
+
+    <div class="diagram-wrap">
+      <svg id="hfepMap" viewBox="0 0 900 520" role="img" aria-labelledby="title desc">
+        <title id="title">HF-EP Prototype Map</title>
+        <desc id="desc">Nodes show prototypes and links to the unification target.</desc>
+
+        <!-- Links to HF-EP core -->
+        <g class="links">
+          <line class="link" x1="450" y1="260" x2="190" y2="120" />
+          <line class="link" x1="450" y1="260" x2="710" y2="120" />
+          <line class="link" x1="450" y1="260" x2="780" y2="320" />
+          <line class="link" x1="450" y1="260" x2="120" y2="320" />
+          <line class="link" x1="450" y1="260" x2="450" y2="450" />
+          <line class="link" x1="620" y1="450" x2="450" y2="260" />
+        </g>
+
+        <!-- Center, HF-EP target -->
+        <g class="node" transform="translate(450,260)">
+          <circle r="74" />
+          <text class="title" text-anchor="middle" y="-4">HF-EP</text>
+          <text class="desc" text-anchor="middle">
+            <tspan x="0" y="16">Unified API, CI,</tspan>
+            <tspan x="0" dy="1.2em">docs</tspan>
+          </text>
+        </g>
+
+        <!-- Five prototypes around -->
+        <g class="node" transform="translate(190,120)">
+          <circle r="64" />
+          <text class="title" text-anchor="middle" y="-4">PedSUMO</text>
+          <text class="desc" text-anchor="middle">
+            <tspan x="0" y="16">Pedestrian AV</tspan>
+            <tspan x="0" dy="1.2em">crossing, eHMI</tspan>
+          </text>
+        </g>
+
+        <g class="node" transform="translate(710,120)">
+          <circle r="64" />
+          <text class="title" text-anchor="middle" y="-4">HUD-SUMO</text>
+          <text class="desc" text-anchor="middle">
+            <tspan x="0" y="16">Head-up overlays,</tspan>
+            <tspan x="0" dy="1.2em">speed and lane</tspan>
+          </text>
+        </g>
+
+        <g class="node" transform="translate(780,320)">
+          <circle r="64" />
+          <text class="title" text-anchor="middle" y="-4">UAM-SUMO</text>
+          <text class="desc" text-anchor="middle">
+            <tspan x="0" y="16">Vertiports,</tspan>
+            <tspan x="0" dy="1.2em">routing, mode choice</tspan>
+          </text>
+        </g>
+
+        <g class="node" transform="translate(120,320)">
+          <circle r="64" />
+          <text class="title" text-anchor="middle" y="-4">MM-SUMO</text>
+          <text class="desc" text-anchor="middle">
+            <tspan x="0" y="16">Micro-mobility and</tspan>
+            <tspan x="0" dy="1.2em">robots</tspan>
+          </text>
+        </g>
+
+        <g class="node" transform="translate(450,450)">
+          <circle r="64" />
+          <text class="title" text-anchor="middle" y="-4">GTA</text>
+          <text class="desc" text-anchor="middle">
+            <tspan x="0" y="16">Agents from</tspan>
+            <tspan x="0" dy="1.2em">census data</tspan>
+          </text>
+        </g>
+
+        <!-- Unity viewer, linked to HF-EP -->
+        <g class="node" transform="translate(620,450)">
+          <circle r="54" />
+          <text class="title" text-anchor="middle" y="-4">Unity viewer</text>
+          <text class="desc" text-anchor="middle">
+            <tspan x="0" y="16">ScootAR</tspan>
+            <tspan x="0" dy="1.2em">bridge</tspan>
+          </text>
+        </g>
+
+        <text x="450" y="505" class="svg-note" text-anchor="middle">Arrows omitted for clarity, all prototypes merge into HF-EP, the Unity viewer supports study flows</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+      </section>
+
+      <!-- Approach -->
+      <section id="approach">
+        <div class="container">
+          <h2 class="h3 fw-bold">Approach</h2>
+          <p class="text-secondary">Seven work packages deliver a stable add‑on and a community path.</p>
+          <div class="row g-4">
+            <div class="col-md-6">
+              <h3 class="h5 fw-bold">Architecture and unification</h3>
+              <ul class="text-secondary">
+                <li>Core abstractions, environment, agent, sensor, interface, scenario, collector</li>
+                <li>Config schema with validation and stamps</li>
+                <li>Compat layer for legacy scripts</li>
+              </ul>
+              <h3 class="h5 fw-bold">Reliability and release</h3>
+              <ul class="text-secondary">
+                <li>Unit, property, integration, visual regression</li>
+                <li>Static checks, signed packages, Docker and Conda, PyPI</li>
+              </ul>
+              <h3 class="h5 fw-bold">Docs and training</h3>
+              <ul class="text-secondary">
+                <li>Versioned MkDocs site and API pages</li>
+                <li>Quickstart, intermediate, advanced tutorials</li>
+                <li>UK scenarios and educator kit</li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h3 class="h5 fw-bold">Maintainability features</h3>
+              <ul class="text-secondary">
+                <li>Scenario DSL and schema</li>
+                <li>Structured collectors, Parquet and Arrow</li>
+                <li>Profiling and caching, benchmarks</li>
+                <li>Unity bridge protocol and headless visualiser</li>
+              </ul>
+              <h3 class="h5 fw-bold">Community and sustainability</h3>
+              <ul class="text-secondary">
+                <li>Mentored pull requests, clinics, sprints</li>
+                <li>Governance, code of conduct, RFCs, LTS policy</li>
+                <li>Case studies, educator packs, impact brief</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Timeline -->
+      <section id="timeline" class="pt-0">
+        <div class="container">
+          <h2 class="h3 fw-bold">Timeline</h2>
+          <div class="timeline mt-2">
+            <div class="titem"><h3 class="h6 fw-bold mb-1">Month 1</h3><div>Roadmap and governance, API blueprint, recruit RSE</div></div>
+            <div class="titem"><h3 class="h6 fw-bold mb-1">Month 2</h3><div>Core skeleton and schema, CI skeleton, docs scaffold</div></div>
+            <div class="titem"><h3 class="h6 fw-bold mb-1">Month 3</h3><div>SUMO plugin alpha, compat shims, cross‑platform tests, 0.3.0</div></div>
+            <div class="titem"><h3 class="h6 fw-bold mb-1">Month 4</h3><div>Scenario DSL prototype, visual regression, quickstart</div></div>
+            <div class="titem"><h3 class="h6 fw-bold mb-1">Month 5</h3><div>Unity bridge alpha, collectors, UK scenarios v0, 0.5.0</div></div>
+            <div class="titem"><h3 class="h6 fw-bold mb-1">Month 6</h3><div>Performance benchmarks, confirm pilot sites</div></div>
+            <div class="titem"><h3 class="h6 fw-bold mb-1">Month 7</h3><div>Pilot one start, docs and tests sprint, advanced tutorial, 0.7.0</div></div>
+            <div class="titem"><h3 class="h6 fw-bold mb-1">Month 8</h3><div>Coverage target, signed releases, headless visualiser</div></div>
+            <div class="titem"><h3 class="h6 fw-bold mb-1">Month 9</h3><div>Pilot two start, educator kit v1, Unity bridge v1, 0.9.0</div></div>
+            <div class="titem"><h3 class="h6 fw-bold mb-1">Month 10</h3><div>LTS policy draft, pilot one case study</div></div>
+            <div class="titem"><h3 class="h6 fw-bold mb-1">Month 11</h3><div>Pilot two case study, impact brief, JOSS paper</div></div>
+            <div class="titem"><h3 class="h6 fw-bold mb-1">Month 12</h3><div>v1.0 LTS, workshops recorded, evaluation report and handover</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Team & Objectives -->
+      <section id="team">
+        <div class="container">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <h2 class="h3 fw-bold">Team and roles</h2>
+              <ul class="text-secondary">
+                <li><strong>PI, Mark Colley</strong>, architecture and API, governance, community, release decisions</li>
+                <li><strong>Research Software Engineer</strong>, implementation, CI and packaging, tests, performance, releases</li>
+                <li><strong>Advisory panel</strong>, quarterly review of roadmap and adoption</li>
+                <li><strong>Contributors</strong>, PhD and MSc students, tutorials and examples</li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h2 class="h3 fw-bold">Objectives</h2>
+              <ul class="text-secondary">
+                <li>Unify prototypes into one package with a stable API</li>
+                <li>Freeze versioned data schema with validators and ranges</li>
+                <li>Publish runnable notebooks and screencasts that reproduce results</li>
+                <li>Refactor ScootAR into a general Unity viewer with low skew</li>
+                <li>Grow community capacity and add external maintainers</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Repos -->
+      <section id="repos" class="pt-0">
+        <div class="container">
+          <h2 class="h3 fw-bold">Code and data</h2>
+          <p class="text-secondary">Public repositories that seed HF‑EP.</p>
+          <div class="row g-3">
+            <div class="col-sm-6 col-lg-4">
+              <div class="card-hfep p-3 h-100">
+                <h3 class="h6 fw-bold mb-1">PedSUMO</h3>
+                <p class="mb-2 text-secondary">Pedestrian crossing logic reacting to eHMI</p>
+                <p class="mb-0"><a href="https://github.com/M-Colley/pedsumo" target="_blank" rel="noopener">github.com/M-Colley/pedsumo</a></p>
+              </div>
+            </div>
+            <div class="col-sm-6 col-lg-4">
+              <div class="card-hfep p-3 h-100">
+                <h3 class="h6 fw-bold mb-1">HUD‑SUMO</h3>
+                <p class="mb-2 text-secondary">Head up displays and driving behaviour</p>
+                <p class="mb-0"><a href="https://github.com/Pascal-Jansen/HUD-SUMO" target="_blank" rel="noopener">github.com/Pascal-Jansen/HUD-SUMO</a></p>
+              </div>
+            </div>
+            <div class="col-sm-6 col-lg-4">
+              <div class="card-hfep p-3 h-100">
+                <h3 class="h6 fw-bold mb-1">UAM‑SUMO</h3>
+                <p class="mb-2 text-secondary">Urban air mobility, vertiports and routing</p>
+                <p class="mb-0"><a href="https://github.com/M-Colley/uam-sumo" target="_blank" rel="noopener">github.com/M-Colley/uam-sumo</a></p>
+              </div>
+            </div>
+            <div class="col-sm-6 col-lg-4">
+              <div class="card-hfep p-3 h-100">
+                <h3 class="h6 fw-bold mb-1">MM‑SUMO</h3>
+                <p class="mb-2 text-secondary">Micro mobility and sidewalk robots</p>
+                <p class="mb-0"><a href="https://github.com/M-Colley/sumo-micromobility" target="_blank" rel="noopener">github.com/M-Colley/sumo-micromobility</a></p>
+              </div>
+            </div>
+            <div class="col-sm-6 col-lg-4">
+              <div class="card-hfep p-3 h-100">
+                <h3 class="h6 fw-bold mb-1">GTA</h3>
+                <p class="mb-2 text-secondary">Generative traffic agents from census data</p>
+                <p class="mb-0"><a href="https://github.com/patebel/gta" target="_blank" rel="noopener">github.com/patebel/gta</a></p>
+              </div>
+            </div>
+            <div class="col-sm-6 col-lg-4">
+              <div class="card-hfep p-3 h-100">
+                <h3 class="h6 fw-bold mb-1">ScootAR</h3>
+                <p class="mb-2 text-secondary">Unity VR front end for controlled studies</p>
+                <p class="mb-0"><a href="https://github.com/MarcelGiss/ScootAR" target="_blank" rel="noopener">github.com/MarcelGiss/ScootAR</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- References -->
+      <section id="refs" class="refs pt-0">
+        <div class="container">
+          <h2 class="h3 fw-bold">References</h2>
+          <ol class="mt-2">
+            <li id="ref-uam">Colley, M., Czymmeck, J., Jansen, P., Meinhardt, L.-M., Ebel, P., Rukzio, E., 2025, UAM‑SUMO, Simulacra of Urban Air Mobility Using SUMO To Study Large‑Scale Effects, Proceedings of the 2025 ACM/IEEE International Conference on Human‑Robot Interaction, <a href="https://doi.org/10.1109/HRI61500.2025.10973993" target="_blank" rel="noopener">https://doi.org/10.1109/HRI61500.2025.10973993</a>.</li>
+            <li id="ref-hud">Jansen, P., Colley, M., Wimmer, E., Maresch, J., Rukzio, E., 2025, HUD‑SUMO, Simulacra of In‑Vehicle Head‑Up Displays Using SUMO To Study Large‑Scale Effects, Proceedings of the 2025 ACM/IEEE International Conference on Human‑Robot Interaction, <a href="https://doi.org/10.1109/HRI61500.2025.10974171" target="_blank" rel="noopener">https://doi.org/10.1109/10.1109/HRI61500.2025.10974171</a>.</li>
+            <li id="ref-ped">Colley, M., Czymmeck, J., Kücükkocak, M., Jansen, P., Rukzio, E., 2024, PedSUMO, Simulacra of Automated Vehicle‑Pedestrian Interaction Using SUMO To Study Large‑Scale Effects, Proceedings of the 2024 ACM/IEEE International Conference on Human‑Robot Interaction, <a href="https://doi.org/10.1145/3610977.3637478" target="_blank" rel="noopener">https://doi.org/10.1145/3610977.3637478</a>.</li>
+          </ol>
+        </div>
+      </section>
+    </main>
+
+    <footer class="mt-auto">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-lg-8">
+            <p class="mb-0">HF‑EP will be an open project under a permissive license. Releases will be archived with DOIs. Documentation will be accessible and screen reader friendly.</p>
+          </div>
+          <div class="col-lg-4 text-lg-end mt-2 mt-lg-0">
+            <p class="mb-0">&copy; <span id="y">2025</span> Mark Colley</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76A2z02tPqdjY1hF7G2e9E1d5n9e9ZL2lGCMmYhZfZxP4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script>
+      // Update year
+      document.getElementById('y').textContent = new Date().getFullYear();
+
+      // Activate nav link on scroll via ScrollSpy (initialized via data attributes)
+      const siteNav = document.getElementById('siteNav');
+      if (siteNav) {
+        new bootstrap.ScrollSpy(document.body, { target: '#siteNav', offset: 90 });
+      }
+    </script>
+  </body>
+</html>
